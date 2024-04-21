@@ -56,23 +56,23 @@ var server = app.listen(8080, function () {
     con.query(createDbQuery, function(err, result){
         if(err) throw err;
         console.log("DB Exists!");
-    });
-    con.query(createTableQuery, function(err, result){
-        if(err) throw err;
-        console.log("Table Exists!");
-    });
-    con.query(checkTableQuery, function(err, result){
-       if(err) throw err;
-       if(result.length == 0){
-           con.query(populateTableQueryYes, function(err, result){
-               if(err) throw err;
-           });
-           con.query(populateTableQueryNo, function(err, result){
-               if(err) throw err;
-           });
-           console.log("created Yes and No rows.");
-       } else {
-        console.log("Rows already existed!");
-       }
+        con.query(createTableQuery, function(err, result){
+            if(err) throw err;
+            console.log("Table Exists!");
+            con.query(checkTableQuery, function(err, result){
+                if(err) throw err;
+                if(result.length == 0){
+                    con.query(populateTableQueryYes, function(err, result){
+                        if(err) throw err;
+                    });
+                    con.query(populateTableQueryNo, function(err, result){
+                        if(err) throw err;
+                    });
+                    console.log("created Yes and No rows.");
+                } else {
+                 console.log("Rows already existed!");
+                }
+             });
+        });
     });
 });
