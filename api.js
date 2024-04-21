@@ -37,7 +37,11 @@ app.post('/submit', function (req, res) {
             con.query(updateQuery, function (err, result) {
                 if (err) throw err;
                 console.log("Updated " + req.body.input);
-                res.send('POST Request');
+                if(req.body.input == 1){
+                    res.sendFile(__dirname + '/files/likeNode.html', );
+                } else {
+                    res.sendFile(__dirname + '/files/dislikeNode.html', );
+                }
             });
         });
     } else {
