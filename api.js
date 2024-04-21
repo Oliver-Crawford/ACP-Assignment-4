@@ -8,7 +8,8 @@ var tableName = "pollData";
 
 var con = mysql.createConnection({
     host: "localhost",
-    user: "root",
+    user: "root",   
+    port: 3306,
     password: ""
 });
 
@@ -23,7 +24,25 @@ app.get('/', function (req, res) {
 });
 
 app.post('/submit', function (req, res) {
-    res.send('POST Request');
+    var amount = -1;
+    var selectQuery = "SELECT * FROM " + dbName + "." + tableName + " where id = "
+    var updateQuery = "update " + dbName + "." + tableName + " set amount = ";
+    if(req.body.input == 1 || req.body.input == 2) {
+        console.log("Valid submission!");
+        selectQuery += req.body.input + ";";
+        con.query(selectQuery, function (err, result) {
+            if (err) throw err;
+            amount = result["0"].amount + 1;
+            updateQuery += amount + " where id = " + req.body.input + ";";
+            con.query(updateQuery, function (err, result) {
+                if (err) throw err;
+                console.log("Updated " + req.body.input);
+                res.send('POST Request');
+            });
+        });
+    } else {
+        res.send("Invalid input!");
+    }
 });
 
 var server = app.listen(8080, function () {
@@ -33,7 +52,7 @@ var server = app.listen(8080, function () {
     var populateTableQueryYes = 'INSERT INTO '+ dbName + '.' + tableName + "(name, amount) VALUES ('yes', 0)";
     var populateTableQueryNo = 'INSERT INTO '+ dbName + '.' + tableName + "(name, amount) VALUES ('no', 0)";
 
-    console.log('Node server booting up\n doing initial configs/checks');
+    console.log('Node server booting up\ndoing initial configs/checks');
     con.query(createDbQuery, function(err, result){
         if(err) throw err;
         console.log("DB Exists!");
@@ -42,16 +61,18 @@ var server = app.listen(8080, function () {
         if(err) throw err;
         console.log("Table Exists!");
     });
-    con.query(checkTableQuery, function(err, result, fields){
-        if(err) throw err;
-        if(result.length == 0){
-            con.query(populateTableQueryYes, function(err, result){
-                if(err) throw err;
-            });
-            con.query(populateTableQueryNo, function(err, result){
-                if(err) throw err;
-            });
-            console.log("created Yes and No rows.");
-        }
+    con.query(checkTableQuery, function(err, result){
+       if(err) throw err;
+       if(result.length == 0){
+           con.query(populateTableQueryYes, function(err, result){
+               if(err) throw err;
+           });
+           con.query(populateTableQueryNo, function(err, result){
+               if(err) throw err;
+           });
+           console.log("created Yes and No rows.");
+       } else {
+        console.log("Rows already existed!");
+       }
     });
 });
