@@ -45,7 +45,7 @@ app.post('/submit', function (req, res) {
             });
         });
     } else {
-        res.send("Invalid input!");
+        res.send("Invalid input!<br/>" + req.body.input + " is not a valid option.");
     }
 });
 
